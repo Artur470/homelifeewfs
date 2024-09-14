@@ -1,7 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from cloudinary.models import CloudinaryField
 from config import settings
 from cloudinary.models import CloudinaryField
 from decimal import Decimal, InvalidOperation
@@ -31,9 +31,9 @@ class Color(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
-    image1 = models.ImageField(upload_to='images/', blank=True)
-    image2 = models.ImageField(upload_to='images/', blank=True, null=True)
-    image3 = models.ImageField(upload_to='images/', blank=True, null=True)
+    image1 = CloudinaryField('image', blank=True, null=True)
+    image2 = CloudinaryField('image', blank=True, null=True)
+    image3 = CloudinaryField('image', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -43,7 +43,6 @@ class Product(models.Model):
     description = models.TextField(max_length=2551)
     is_product_of_the_day = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-
     def save(self, *args, **kwargs):
         if self.quantity == 0:
             self.is_active = False
