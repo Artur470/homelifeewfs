@@ -13,9 +13,11 @@ from rest_framework.permissions import IsAuthenticated
 from product.serializers import *
 from django.db.models import Count, Avg
 from product.models import *
+from rest_framework.renderers import JSONRenderer
 
 
 class HomepageView(APIView):
+    renderer_classes = [JSONRenderer]
     @swagger_auto_schema(
         tags=['product'],
         operation_description="Этот эндпоинт возвращает данные для главной страницы, "
