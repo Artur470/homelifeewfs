@@ -1,8 +1,5 @@
 from django.contrib import admin
 from django.urls import path, include
-from config import settings
-from django.conf.urls.static import static
-from django.urls import re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -17,18 +14,18 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=(permissions.AllowAny,),  # Разрешить доступ без авторизации
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #apps
+    # Приложения
     path('product/', include('product.urls')),
     path('users/', include('users.urls')),
     path('cart/', include('cart.urls')),
 
-    #swagger
-    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    # Swagger
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
