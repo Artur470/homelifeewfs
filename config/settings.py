@@ -7,13 +7,11 @@ from decouple import config, Csv
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ECRET_KEY = config('SECRET_KEY')
+
+SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', cast=bool)
-
-# Обратите внимание на параметр default
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
-
-print('ALLOWED_HOSTS:', ALLOWED_HOSTS)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+# print('ALLOWED_HOSTS:', ALLOWED_HOSTS)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
