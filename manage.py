@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+
 import os
 import sys
-from decouple import config
+from decouple import config  # Добавьте этот импорт
 
 # Вывод переменных окружения для проверки
 print(f"DB_NAME: {config('DB_NAME')}")

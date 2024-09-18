@@ -1,27 +1,25 @@
 from pathlib import Path
-from decouple import config, Csv
-from datetime import timedelta
 from decouple import config
-import sys
-from decouple import config, Csv
+from datetime import timedelta
 import dj_database_url
-
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# Конфигурация настроек
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', cast=bool)
-# ALLOWED_HOSTS = ['homelifesql.onrender.com', 'localhost', '127.0.0.1']
-ALLOWED_HOSTS = ['*']
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
 print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 print(f"SECRET_KEY: {SECRET_KEY}")
 print(f"DEBUG: {DEBUG}")
 
+# Установленные приложения
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,16 +29,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
 
-    # Library
+    # Библиотеки
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
-    'decouple',
     'drf_yasg',
     'cloudinary',
     'cloudinary_storage',
 
-    # Auth
+    # Аутентификация
     'rest_framework.authtoken',
     'dj_rest_auth',
     'django.contrib.sites',
@@ -51,12 +48,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
 
-    # Apps
+    # Приложения
     'product.apps.ProductConfig',
     'users.apps.UsersConfig',
     'cart.apps.CartConfig'
 ]
 
+# Промежуточное ПО
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -89,39 +87,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-
-CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET')
-
-
-
-
-print(f"SECRET_KEY: {SECRET_KEY}")
-print(f"DEBUG: {DEBUG}")
-print(f"DB_NAME: {config('DB_NAME')}")
-print(f"DB_USER: {config('DB_USER')}")
-print(f"DB_PASSWORD: {config('DB_PASSWORD')}")
-print(f"DB_HOST: {config('DB_HOST')}")
-print(f"DB_PORT: {config('DB_PORT')}")
-
-
+# Конфигурация базы данных
 DATABASES = {
-    'default': dj_database_url.parse(
-        f"postgresql://{config('DB_USER')}:{config('DB_PASSWORD')}@{config('DB_HOST')}:{config('DB_PORT')}/{config('DB_NAME')}"
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
+    }
 }
 
-# Пример использования timedelta
-ACCESS_TOKEN_LIFETIME = timedelta(minutes=60)
+# Настройки для JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
-# Password validation
-
-
-# Password validation
-
+# Валидация паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -137,44 +126,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# Интернационализация
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Asia/Bishkek'
-
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Статические файлы
 STATIC_URL = 'static/'
 
-# Default primary key field type
+
+AUTH_USER_MODEL = 'users.User'
+
+
+
+# Основной ключ поля
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# settings.py
-# settings.py
-# settings.py
-# settings.py
-# settings.py
-# settings.py
-REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',  # Этот рендерер позволяет просматривать API в браузере
-    ),
-}
 
-
-REST_AUTH = {
-    'USE_JWT': True,
-}
-
-SITE_ID = 1
-
+# Настройки электронной почты
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -188,49 +157,40 @@ CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME')
 CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY')
 CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET')
 
-AUTH_USER_MODEL = 'users.User'
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET
+)
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'JTI_CLAIM': 'jti',
-}
+# Хранение медиа файлов в Cloudinary
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = f'https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/'
+
+# CORS настройки
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
 ]
-
-
 CORS_ALLOW_CREDENTIALS = True
 
+# Настройка идентификатора сайта
+SITE_ID = 1
 
-cloudinary.config(
-    cloud_name=CLOUDINARY_CLOUD_NAME,
-    api_key=CLOUDINARY_API_KEY,
-    api_secret=CLOUDINARY_API_SECRET
-)
-# settings.py
-
-# Настройки Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': config('CLOUDINARY_API_KEY'),
-    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+# REST framework настройки
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-MEDIA_URL = f'https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/'
+REST_AUTH = {
+    'USE_JWT': True,
+}
