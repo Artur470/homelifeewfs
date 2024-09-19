@@ -179,14 +179,16 @@ CORS_ALLOW_CREDENTIALS = True
 # Настройка идентификатора сайта
 SITE_ID = 1
 
+
+
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'config.renderers.PrettyJSONRenderer',  # Путь к вашему рендереру
-        'rest_framework.renderers.BrowsableAPIRenderer',  # Если вам нужно это для браузера
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
 }
 
