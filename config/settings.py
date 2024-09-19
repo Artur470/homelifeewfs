@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 print(f"SECRET_KEY: {SECRET_KEY}")
@@ -178,13 +178,19 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Настройка идентификатора сайта
 SITE_ID = 1
+
+
+
+# config/settings.py
+
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',  # Оставляем только JSONRenderer
+        'config.renderers.PrettyJSONRenderer',  # Ваш кастомный рендерер
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Стандартный рендерер для веб-интерфейса
     ),
 }
 
